@@ -1,6 +1,6 @@
 .idea
+inspection
 _windows
-
 
 # User-specific stuff:
 .idea/workspace.xml
@@ -48,5 +48,3 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 fabric.properties
-_windows/
-inspection/
