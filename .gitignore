@@ -1,4 +1,6 @@
-/.idea/
+.idea
+inspection
+_windows
 
 # User-specific stuff:
 .idea/workspace.xml
