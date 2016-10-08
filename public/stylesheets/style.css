@@ -1,8 +1,7 @@
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+html, body {
+  font-family:'Roboto', sans-serif;
 }
 
-a {
-  color: #00B7FF;
+.post-title {
+  font-size:4em;
 }
