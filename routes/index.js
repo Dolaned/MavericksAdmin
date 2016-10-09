@@ -34,42 +34,42 @@ var urls = [
 doCall(urls[0], function(response){
   // Here you have access to your variable
   body[0] = response;
-})
+});
 
 doCall(urls[1], function(response){
   // Here you have access to your variable
   body[1] = response;
-})
+});
 
 doCall(urls[2], function(response){
   // Here you have access to your variable
   body[2] = response;
-})
+});
 
 doCall(urls[3], function(response){
   // Here you have access to your variable
   body[3] = response;
-})
+});
 
 doCall(urls[4], function(response){
   // Here you have access to your variable
   body[4] = response;
-})
+});
 
 doCall(urls[5], function(response){
   // Here you have access to your variable
   body[5] = response;
-})
+});
 
 doCall(urls[6], function(response){
   // Here you have access to your variable
   body[6] = response;
-})
+});
 
 doCall(urls[7], function(response){
   // Here you have access to your variable
   body[7] = response;
-})
+});
 
 
 /*
@@ -90,6 +90,29 @@ router.get('/', function(req, res, next) {
   res.render('index', {
     movies: body,
   })
+});
+
+/* Individual post*/
+router.get('/post', function(req, res, next) {
+  res.render('post', {
+    title: 'Individual post - not finished',
+  })
+});
+
+/* Search */
+router.get('/search', function(req, res, next) {
+  var term = req.query.term;
+  var year = req.query.year;
+  var url = 'http://www.omdbapi.com/?t=+'+term+'&y='+year+'&plot=short&r=json';
+  var result = "";
+  doCall(url, function(response){
+    // Here you have access to your variable
+    result = response;
+    res.render('search', {
+      term: term,
+      movie: result
+    });
+  });
 });
 
 module.exports = router;
