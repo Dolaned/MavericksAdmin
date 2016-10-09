@@ -1,6 +1,7 @@
 .idea
 inspection
 _windows
+node_modules
 
 # User-specific stuff:
 .idea/workspace.xml
