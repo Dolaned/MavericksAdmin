@@ -26,6 +26,15 @@ html
       div.container
         h1 Hello World!
         h2 Welcome to the Mavericks Movie blog
+        form(method='GET', id='movieSearch', action='search')
+          div.row
+            div.col-md-8
+              input.form-control(type='text', name='term', placeholder='Search for a movie...')
+            div.col-md-4
+              div.input-group
+                input.form-control(type='number', name='year', placeholder='Year')
+                span.input-group-btn
+                  button.btn.btn-primary(type='submit') Search
 
     div.container
       block content

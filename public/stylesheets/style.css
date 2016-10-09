@@ -6,6 +6,8 @@ html, body {
 {
   padding: 0px;
   transition: transform 0.2s;
+  width: 290px;
+  height: 430px;
 }
 
 .boxHits:hover
