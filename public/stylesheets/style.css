@@ -1,3 +1,16 @@
 html, body {
   font-family:'Roboto', sans-serif;
 }
+
+.boxHits
+{
+  padding: 0px;
+  transition: transform 0.2s;
+}
+
+.boxHits:hover
+{
+  cursor: pointer;
+  transform: scale(1.1);
+  z-index:2;
+}
