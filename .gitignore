@@ -52,3 +52,4 @@ fabric.properties
 
 /_windows/
 *.xml
+/node_modules/

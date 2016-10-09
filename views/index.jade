@@ -1,11 +1,19 @@
 extends layout
 
+div.modal.hide(id="myModal")
+    .modal-header
+        button(type="button", class="close", data-dismiss="modal") x
+        h3 Modal Header
+    .modal-body
+        p One fine body...
+    .modal-footer
+
 block content
   div.row
-    div.col-md-8
-      h1 Suicide Squad
-      p Lorem ipsum!
+    each movie, i in movies
+        div.col-lg-3
+          a(href='#')
+            img(src="#{movie.Poster}", class="img-thumbnail boxHits", width="290", height="200", alt="Image Title")
+          h3.text-center(style="padding-bottom:20px;") #{movie.Title}
 
-    div#sidebar.col-md-4
-      h1 Archives
-      p Archives go here
+
