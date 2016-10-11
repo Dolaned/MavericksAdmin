@@ -89,6 +89,7 @@ doCall(urls[7], function(response){
 router.get('/', function(req, res, next) {
   res.render('index', {
     movies: body,
+    title: 'Mavericks Movie Blog'
   })
 });
 
@@ -121,7 +122,8 @@ router.get('/search', function(req, res, next) {
     result = response;
     res.render('search', {
       term: term,
-      movie: result
+      movie: result,
+      title: 'Search - Mavericks Movie Blog'
     });
   });
 });
