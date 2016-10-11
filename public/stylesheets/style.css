@@ -61,3 +61,56 @@ html, body {
   border-color:#E92F1A;
   box-shadow:inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(233, 47, 26, 0.6);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Movie warnings */
+span.ratingG, span.ratingPG, span.ratingM, span.ratingMA, span.ratingR, span.ratingNA {
+  text-decoration:uppercase;
+  color:#000000;
+  font-weight:600;
+  padding:0px 15px;
+  border-radius:3px 3px 3px 3px;
+  -moz-border-radius:3px 3px 3px 3px;
+  border:1px solid #FFFFFF;
+}
+
+span.ratingG {
+  background-color:#18a528;
+  color:#ffffff;
+}
+
+span.ratingPG {
+  background-color:#FFFF00;
+}
+
+span.ratingM {
+  background-color:#1989f7;
+  color:#ffffff;
+}
+
+span.ratingMA {
+  background-color:#FF0000;
+  color:#FFFFFF;
+}
+
+span.ratingR {
+  background-color:#8b19f7;
+  color:#ffffff;
+}
+
+span.ratingNA {
+  background-color:#FFFFFF;
+  border:1px solid #000000;
+}

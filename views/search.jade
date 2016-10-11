@@ -8,7 +8,7 @@ block content
             if movie.Response == "False"
                 p No results found.
             else
-                a(href='#')
+                a(href='post?id=#{movie.imdbID}')
                     if movie.Poster == 'N/A' || movie.Poster == ''
                         img(src="img/na.jpg", class="img-thumbnail boxHits", width="290", height="200", alt="#{movie.Title}")
                     else

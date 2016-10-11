@@ -94,9 +94,21 @@ router.get('/', function(req, res, next) {
 
 /* Individual post*/
 router.get('/post', function(req, res, next) {
-  res.render('post', {
-    title: 'Individual post - not finished',
-  })
+  var id = req.query.id;
+  var url = 'http://www.omdbapi.com/?i='+id+'&plot=full&r=json';
+  var result = "";
+  doCall(url, function(response){
+    result = response;
+
+    var title = "Not Found - Mavericks Movie Blog";
+    if(result.Response != "False") {
+      title = result.Title + " - Mavericks Movie Blog";
+    }
+    res.render('post', {
+      title: title,
+      movie: result
+    });
+  });
 });
 
 /* Search */
@@ -106,7 +118,6 @@ router.get('/search', function(req, res, next) {
   var url = 'http://www.omdbapi.com/?t=+'+term+'&y='+year+'&plot=short&r=json';
   var result = "";
   doCall(url, function(response){
-    // Here you have access to your variable
     result = response;
     res.render('search', {
       term: term,

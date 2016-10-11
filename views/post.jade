@@ -2,6 +2,66 @@ extends layout
 
 block content
     div.row
-        div.col-md-8.col-md-offset-2
-            h1.post-title Suicide Squad
-            p Lorem ipsum!
+        div.col-md-10.col-md-offset-1
+            div.row
+                div.col-md-4
+                    if movie.Poster == 'N/A' || movie.Poster == ''
+                        img(src="img/na.jpg", class="img-thumbnail boxHits", width="290", height="200", alt="#{movie.Title}")
+                    else
+                        img(src="#{movie.Poster}", class="img-thumbnail boxHits", width="290", height="200", alt="#{movie.Title}")
+                div.col-md-8
+                    h1 #{movie.Title}
+                        span(class=(movie.Rated == 'N/A') ? 'ratingNA pull-right' : 'rating'+movie.Rated+' pull-right') #{movie.Rated}
+                    div.row
+                        div.col-md-4
+                            b Year
+                            |  #{movie.Year}
+                        div.col-md-4
+                            b Runtime
+                            |  #{movie.Runtime}
+                        div.col-md-4
+                            b Released
+                            |  #{movie.Released}
+                    hr
+                    p #{movie.Plot}
+                    hr
+                    table.table.table-hover.table-striped
+                        tr
+                            td
+                                b Genre
+                            td #{movie.Genre}
+                        tr
+                            td
+                                b Director
+                            td #{movie.Director}
+                        tr
+                            td
+                                b Writer
+                            td #{movie.Writer}
+                        tr
+                            td
+                                b Actors
+                            td #{movie.Actors}
+                        tr
+                            td
+                                b Language
+                            td #{movie.Language}
+                        tr
+                            td
+                                b Country
+                            td #{movie.Country}
+                        tr
+                            td
+                                b Awards
+                            td #{movie.Awards}
+                        tr
+                            td
+                                b IMDB Rating
+                            td #{movie.imdbRating} / 10
+            hr
+            div.row
+                div.col-md-12
+                    h1(style='text-align:center') Comments
+            div.row
+                div-col-md-12
+                    p Comments are unfinished.
