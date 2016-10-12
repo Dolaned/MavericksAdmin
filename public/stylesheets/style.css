@@ -2,20 +2,20 @@ html, body {
   font-family:'Roboto', sans-serif;
 }
 
-<<<<<<< HEAD
+
 .boxHits
 {
   padding: 0px;
   transition: transform 0.2s;
 }
 
-.boxHits:hover
-{
+.boxHits:hover {
   cursor: pointer;
   transform: scale(1.1);
-  z-index:2;
-=======
+  z-index: 2;
+}
+
 .post-title {
   font-size:4em;
->>>>>>> refs/remotes/origin/master
+
 }

@@ -88,17 +88,14 @@ request.end();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-<<<<<<< HEAD
   res.render('index', {
     movies: body,
     })
-=======
-  res.render('index', { title: 'Mavericks Movie Blog' });
 });
 
 router.get('/post', function(req, res, next) {
   res.render('post', { title: 'Movie Name - Mavericks Movie Blog'});
->>>>>>> refs/remotes/origin/master
+
 });
 
 module.exports = router;
