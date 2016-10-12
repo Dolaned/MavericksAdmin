@@ -1,0 +1,21 @@
+extends layout
+
+block content
+  div.col-sm-8.col-sm-offset-2
+    if(message != null)
+      div.alert-danger #{message}
+
+    form(action='/login', method='post')
+      div.form-group
+        label Email
+        input(type='text', class='form-control', name='email')
+
+      div.form-group
+        label Password
+        input(type='password', class='form-control', name='password')
+      div
+        input(type='submit', class='form-control', value='Submit')
+
+    hr
+    span.fa-fa-sign-in Don't have an account?
+      a(href='/signup') Signup
