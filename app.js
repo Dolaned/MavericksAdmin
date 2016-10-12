@@ -4,15 +4,18 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var mongoose = require('mongoose');
 
-var db = mongoose.connect("mongodb://localhost/www/MavericksAdmin/db");
+//add these 5 declarations
+var passport = require('passport');
+var LocalStrategy = require('passport-local').Strategy;
+var mongoose = require('mongoose');
+var flash = require('connect-flash');
+var session = require('express-session');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
 var app = express();
-
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -25,6 +28,17 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+//add these 5 declarations
+//adding configuring passport schema
+//sessions are need to carry username from login to secret page
+//Passport just provides the mechanism to handle authentication leaving the onus of implementing session-handling ourselves
+app.use(session({ secret: 'shhsecret' }));
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(flash());
+require('./config/passport')(passport);
+
 
 app.use('/', routes);
 app.use('/users', users);
