@@ -1,7 +1,11 @@
 var express = require('express');
+var passport = require('passport');
 var router = express.Router();
+var mongoose = require('mongoose');
 var request = require("request");
 var urllib = require('urllib');
+
+var credentials = require('../config/credentials.js');
 
 var body = ["", "", "", ""];
 
@@ -11,6 +15,20 @@ function doCall(urlToCall, callback) {
     return callback(JSON.parse(data));
   });
 }
+
+/*
+ * The options object is optional, but we want to specify the keepAlive option, which will
+ * prevent database connection errors for long-running applications (like a website).
+ */
+
+var opts = {
+    server: {
+        socketOptions: { keepAlive: 1 }
+    }
+};
+// reading credentials from credentials.js
+mongoose.connect(credentials.mongo.development.connectionString, opts);
+
 
 var urls = [
   "http://www.omdbapi.com/?t=jungle+book&y=2016&plot=short&r=json",
@@ -128,4 +146,39 @@ router.get('/search', function(req, res, next) {
   });
 });
 
+router.get('/login', function(req, res, next) {
+    res.render('login', { message: req.flash('loginMessage') });
+});
+
+router.get('/signup', function(req, res) {
+    res.render('signup', { message: req.flash('loginMessage') });
+});
+
+router.get('/profile', isLoggedIn, function(req, res) {
+    res.render('profile', { user: req.user });
+});
+
+router.get('/logout', function(req, res) {
+    req.logout();
+    res.redirect('/');
+});
+
+router.post('/signup', passport.authenticate('local-signup', {
+    successRedirect: '/profile',
+    failureRedirect: '/signup',
+    failureFlash: true,
+}));
+
+router.post('/login', passport.authenticate('local-login', {
+    successRedirect: '/profile',
+    failureRedirect: '/login',
+    failureFlash: true,
+}));
+
 module.exports = router;
+
+function isLoggedIn(req, res, next) {
+    if (req.isAuthenticated())
+        return next();
+    res.redirect('/');
+}
