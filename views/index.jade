@@ -4,7 +4,7 @@ block content
   div.row
     each movie, i in movies
         div.col-lg-3
-          a(href='#')
+          a(href='post?id=#{movie.imdbID}')
             img(src="#{movie.Poster}", class="img-thumbnail boxHits", width="290", height="200", alt="Image Title")
           h3.text-center(style="padding-bottom:20px;") #{movie.Title}
 
