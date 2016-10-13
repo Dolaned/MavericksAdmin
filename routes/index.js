@@ -107,7 +107,8 @@ doCall(urls[7], function(response){
 router.get('/', function(req, res, next) {
   res.render('index', {
     movies: body,
-    title: 'Mavericks Movie Blog'
+    title: 'Mavericks Movie Blog',
+    login: checkLoggedIn(req)
   })
 });
 
@@ -125,7 +126,8 @@ router.get('/post', function(req, res, next) {
     }
     res.render('post', {
       title: title,
-      movie: result
+      movie: result,
+      login: checkLoggedIn(req)
     });
   });
 });
@@ -141,21 +143,31 @@ router.get('/search', function(req, res, next) {
     res.render('search', {
       term: term,
       movie: result,
-      title: 'Search - Mavericks Movie Blog'
+      title: 'Search - Mavericks Movie Blog',
+      login: checkLoggedIn(req)
     });
   });
 });
 
-router.get('/login', function(req, res, next) {
-    res.render('login', { message: req.flash('loginMessage') });
+router.get('/login', notLoggedIn, function(req, res, next) {
+    res.render('login', {
+        message: req.flash('loginMessage'),
+        login: checkLoggedIn(req)
+    });
 });
 
-router.get('/signup', function(req, res) {
-    res.render('signup', { message: req.flash('loginMessage') });
+router.get('/signup', notLoggedIn, function(req, res) {
+    res.render('signup', {
+        message: req.flash('loginMessage'),
+        login: checkLoggedIn(req)
+    });
 });
 
 router.get('/profile', isLoggedIn, function(req, res) {
-    res.render('profile', { user: req.user });
+    res.render('profile', {
+        user: req.user,
+        login: checkLoggedIn(req)
+    });
 });
 
 router.get('/logout', function(req, res) {
@@ -181,4 +193,18 @@ function isLoggedIn(req, res, next) {
     if (req.isAuthenticated())
         return next();
     res.redirect('/');
+}
+
+function notLoggedIn(req, res, next) {
+    if(!req.isAuthenticated()) {
+        return next();
+    }
+    res.redirect('/');
+}
+
+function checkLoggedIn(req) {
+    if(req.isAuthenticated()) {
+        return true;
+    }
+    return false;
 }

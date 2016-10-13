@@ -2,8 +2,8 @@ extends layout
 
 block content
   div.col-sm-8.col-sm-offset-2
-    if(message != null)
-      div.alert-danger #{message}
+    if(message.length != 0)
+      div.alert.alert-danger #{message}
 
     h1 Login
     hr
