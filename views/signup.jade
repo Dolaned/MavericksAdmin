@@ -5,6 +5,9 @@ block content
     if(message != null)
       div.alert-danger #{message}
 
+    h1 Signup
+    hr
+
     form(action='/signup', method='post')
       div.form-group
         label Email
@@ -19,4 +22,4 @@ block content
 
     hr
     span.fa.fa-sign-in Already have an acccount?
-    a(href='/login') Login
+    a(href='/login')  Login

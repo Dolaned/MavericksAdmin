@@ -3,16 +3,17 @@ extends layout
 block content
   div.col-sm-8.col-sm-offset-2
     div.text-center
-      h1.fa.fa-user Profile
-        span
-          strong user ID:
-          if(user._id)
-            | #{user._id}
-        span.fa.fa-sign-out
-          a(href='/') Sign out
-      hr
+      h1.fa.fa-user My Profile
       div.jumbotron
+        br
+        br
         if(user.local.email != null)
           img(src='https://avatars.io/gravatar/#{user.local.email}/140', class='img-circle')
-          strong Email:
-          | #{user.local.email}
+          br
+        br
+        strong Email:
+        |  #{user.local.email}
+        if(user._id)
+          br
+          strong User ID:
+          |  #{user._id}
