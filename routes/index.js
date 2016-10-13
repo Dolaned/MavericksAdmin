@@ -4,10 +4,10 @@ var router = express.Router();
 var mongoose = require('mongoose');
 var request = require("request");
 var urllib = require('urllib');
+var async = require('async');
 
 var credentials = require('../config/credentials.js');
-
-var body = ["", "", "", ""];
+var Movies = require('../models/Movie');
 
 function doCall(urlToCall, callback) {
   urllib.request(urlToCall, { wd: 'nodejs' }, function (err, data, response) {
@@ -30,86 +30,38 @@ var opts = {
 mongoose.connect(credentials.mongo.development.connectionString, opts);
 
 
-var urls = [
-  "http://www.omdbapi.com/?t=jungle+book&y=2016&plot=short&r=json",
-  "http://www.omdbapi.com/?t=zootopia&y=2016&plot=short&r=json",
-  "http://www.omdbapi.com/?t=Sausage+party&y=&plot=short&r=json",
-  "http://www.omdbapi.com/?t=kung+fu+panda&y=2016&plot=short&r=json",
-  "http://www.omdbapi.com/?t=minions&y=&plot=short&r=json",
-  "http://www.omdbapi.com/?t=ice+age&y=2016&plot=short&r=json",
-  "http://www.omdbapi.com/?t=finding+dory&y=2016&plot=short&r=json",
-  "http://www.omdbapi.com/?t=pete's+dragon&y=2016&plot=short&r=json"
-];
-
-/*
- "http://www.omdbapi.com/?t=jungle+book&y=2016&plot=short&r=json",
- "http://www.omdbapi.com/?t=secret+life+of+pets&y=2016&plot=short&r=json",
- "http://www.omdbapi.com/?t=pete's+dragon&y=2016&plot=short&r=json",
- "http://www.omdbapi.com/?t=finding+dory&y=2016&plot=short&r=json",
- "http://www.omdbapi.com/?t=zootopia&y=2016&plot=short&r=json"
- */
-
-doCall(urls[0], function(response){
-  // Here you have access to your variable
-  body[0] = response;
-});
-
-doCall(urls[1], function(response){
-  // Here you have access to your variable
-  body[1] = response;
-});
-
-doCall(urls[2], function(response){
-  // Here you have access to your variable
-  body[2] = response;
-});
-
-doCall(urls[3], function(response){
-  // Here you have access to your variable
-  body[3] = response;
-});
-
-doCall(urls[4], function(response){
-  // Here you have access to your variable
-  body[4] = response;
-});
-
-doCall(urls[5], function(response){
-  // Here you have access to your variable
-  body[5] = response;
-});
-
-doCall(urls[6], function(response){
-  // Here you have access to your variable
-  body[6] = response;
-});
-
-doCall(urls[7], function(response){
-  // Here you have access to your variable
-  body[7] = response;
-});
-
-
-/*
- var http = require('http');
- var client = http.request(80, "google.com");
- request = client.request();
- request.on('response', function( res ) {
- res.on('data', function( data ) {
- console.log( data );
- } );
- } );
- request.end();
- */
-
-
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', {
-    movies: body,
-    title: 'Mavericks Movie Blog',
-    login: checkLoggedIn(req)
-  })
+    var found = false;
+    var arr = [];
+
+    Movies.find().sort({created_at: -1}).limit(8).exec(function(err, result) {
+        if(err) {
+            throw err;
+        }
+        if(result.length < 1) {
+            found = false;
+        }
+        else {
+            found = true;
+        }
+
+        async.filter(result, function(val, callback) {
+            doCall('http://www.omdbapi.com/?i='+val['omdbid']+'&plot=short&r=json', function(response) {
+                arr.push(response);
+                callback(null, false);
+            });
+        }, function(err, ret) {
+            res.render('index', {
+                title: 'Mavericks Movie Blog',
+                login: checkLoggedIn(req),
+                found: found,
+                movies: arr
+            });
+        });
+
+        return true;
+    });
 });
 
 /* Individual post*/
@@ -123,6 +75,7 @@ router.get('/post', function(req, res, next) {
     var title = "Not Found - Mavericks Movie Blog";
     if(result.Response != "False") {
       title = result.Title + " - Mavericks Movie Blog";
+      checkMovieExists(result.imdbID);
     }
     res.render('post', {
       title: title,
@@ -140,6 +93,9 @@ router.get('/search', function(req, res, next) {
   var result = "";
   doCall(url, function(response){
     result = response;
+      if(result.Response != "False") {
+          checkMovieExists(result.imdbID);
+      }
     res.render('search', {
       term: term,
       movie: result,
@@ -158,7 +114,7 @@ router.get('/login', notLoggedIn, function(req, res, next) {
 
 router.get('/signup', notLoggedIn, function(req, res) {
     res.render('signup', {
-        message: req.flash('loginMessage'),
+        message: req.flash('signupMessage'),
         login: checkLoggedIn(req)
     });
 });
@@ -207,4 +163,26 @@ function checkLoggedIn(req) {
         return true;
     }
     return false;
+}
+
+function checkMovieExists(id) {
+    Movies.findOne({"omdbid": id}, function(err, movie) {
+        if(err) {
+            throw err;
+        }
+
+        if(movie) {
+            return false;
+        }
+        else {
+            var newMovie = new Movies();
+            newMovie.omdbid = id;
+            newMovie.created_at = new Date();
+            newMovie.save(function (err) {
+                if (err)
+                    throw err;
+                return true;
+            });
+        }
+    });
 }
