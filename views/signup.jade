@@ -2,13 +2,16 @@ extends layout
 
 block content
   div.col-sm-8.col-sm-offset-2
-    if(message != null)
-      div.alert-danger #{message}
+    if(message.length != 0)
+      div.alert-danger.alert #{message}
+
+    h1 Signup
+    hr
 
     form(action='/signup', method='post')
       div.form-group
         label Email
-        input(type='text', class='form-control', name='email')
+        input(type='email', class='form-control', name='email')
 
       div.form-group
         label Password
@@ -19,4 +22,4 @@ block content
 
     hr
     span.fa.fa-sign-in Already have an acccount?
-    a(href='/login') Login
+    a(href='/login')  Login

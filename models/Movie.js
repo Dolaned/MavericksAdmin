@@ -4,10 +4,8 @@ var Schema = mongoose.Schema;
 
 // create the user schema
 var movieSchema = new Schema({
-    moviename: String,
     omdbid: String,
-    created_at: Date,
-    updated_at: Date
+    created_at: Date
 });
 
 
