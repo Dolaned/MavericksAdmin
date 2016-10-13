@@ -89,16 +89,17 @@ router.get('/post', function(req, res, next) {
 router.get('/search', function(req, res, next) {
   var term = req.query.term;
   var year = req.query.year;
-  var url = 'http://www.omdbapi.com/?t=+'+term+'&y='+year+'&plot=short&r=json';
+  var url = 'http://www.omdbapi.com/?s='+term+'&y='+year;
   var result = "";
   doCall(url, function(response){
     result = response;
+      var arr = [];
       if(result.Response != "False") {
-          checkMovieExists(result.imdbID);
+            arr = result['Search'];
       }
     res.render('search', {
       term: term,
-      movie: result,
+      movies: arr,
       title: 'Search - Mavericks Movie Blog',
       login: checkLoggedIn(req)
     });

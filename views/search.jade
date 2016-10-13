@@ -4,15 +4,17 @@ block content
     h1 Results for: #{term}
 
     div.row
-        div.col-lg-3
-            if movie.Response == "False"
-                p No results found.
+            if movies.length < 1
+                div.col-md-12
+                    p No results found.
             else
-                a(href='post?id=#{movie.imdbID}')
-                    if movie.Poster == 'N/A' || movie.Poster == ''
-                        img(src="img/na.jpg", class="img-thumbnail boxHits", width="290", height="200", alt="#{movie.Title}")
-                    else
-                        img(src="#{movie.Poster}", class="img-thumbnail boxHits", width="290", height="200", alt="#{movie.Title}")
-                h3.text-center(style="padding-bottom:20px;") #{movie.Title}
+                each movie in movies
+                    div.col-lg-3
+                        a(href='post?id=#{movie.imdbID}')
+                            if movie.Poster == 'N/A' || movie.Poster == ''
+                                img(src="img/na.jpg", class="img-thumbnail boxHits", width="290", height="200", alt="#{movie.Title}")
+                            else
+                                img(src="#{movie.Poster}", class="img-thumbnail boxHits", width="290", height="200", alt="#{movie.Title}")
+                        h3.text-center(style="padding-bottom:20px;height:75px;") #{movie.Title}
 
 
