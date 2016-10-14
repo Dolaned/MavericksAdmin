@@ -8,6 +8,7 @@ var async = require('async');
 
 var credentials = require('../config/credentials.js');
 var Movies = require('../models/Movie');
+var Comments = require('../models/Comment');
 
 function doCall(urlToCall, callback) {
   urllib.request(urlToCall, { wd: 'nodejs' }, function (err, data, response) {
@@ -144,6 +145,22 @@ router.post('/login', passport.authenticate('local-login', {
     failureFlash: true,
 }));
 
+router.post('/post', function (req, res, next) {
+   var comment = new Comments();
+    comment.movie_id = req.query.movie-id;
+    comment.parent_id = req.query.parent-id;
+    comment.body = req.query.body;
+    comment.user_id = req.query.user-id;
+    comment.created_at = new Date();
+
+    comment.save(function (err) {
+        if (err)
+            throw err;
+        return true;
+    });
+
+});
+
 module.exports = router;
 
 function isLoggedIn(req, res, next) {
@@ -187,3 +204,4 @@ function checkMovieExists(id) {
         }
     });
 }
+
