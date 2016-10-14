@@ -81,6 +81,8 @@ router.get('/post', function(req, res, next) {
   doCall(url, function(response){
     result = response;
       var arr = [];
+      var queue = [];
+      var childQueue = [];
 
     var title = "Not Found - Mavericks Movie Blog";
     if(result.Response != "False") {
@@ -100,11 +102,7 @@ router.get('/post', function(req, res, next) {
                             pusher['comment'] = res[temp];
                             pusher['user'] = [];
                             if(res[temp]['user_id'] != "-1") {
-                                Users.findOne({_id : res[temp]['user_id']}).exec(function(err,result1){
-                                    if(err)
-                                        throw err;
-                                    pusher['user'].push(result1);
-                                });
+                                queue.push(res[temp]['_id']);
                             }
                             pusher['replies'] = [];
 
@@ -114,11 +112,7 @@ router.get('/post', function(req, res, next) {
                                     pusher2['comment'] = res[r];
                                     pusher2['user'] = [];
                                     if(res[r]['user_id'] != "-1") {
-                                        Users.findOne({_id : res[r]['user_id']}).exec(function(err,result2){
-                                            if(err)
-                                                throw err;
-                                            pusher2['user'].push(result2);
-                                        });
+                                        childQueue.push([res[r]['_id'], res[temp]['_id']]);
                                     }
 
                                     pusher['replies'].push(pusher2);
@@ -130,6 +124,66 @@ router.get('/post', function(req, res, next) {
                     }
                     callback(null, true);
 
+                });
+            },
+            function(callback) {
+                async.filter(queue, function(val, callback1) {
+                    var uid = "-1";
+                    var i;
+                    for(i in arr) {
+                        if(arr[i]['comment']['_id'] == val) {
+                            uid = arr[i]['comment']['user_id'];
+                            break;
+                        }
+                    }
+                    if(uid != "-1") {
+                        Users.findOne({_id: uid}).exec(function (err, result1) {
+                            if (err)
+                                throw err;
+                            arr[i]['user'].push(result1);
+                            callback1(null, true);
+                        });
+                    }
+                    else {
+                        callback1(null, true);
+                    }
+                }, function(err) {
+                    if(err)
+                        throw err;
+                    callback(null, true);
+                });
+            },
+            function(callback) {
+                async.filter(childQueue, function(val, callback1) {
+                    var uid = "-1";
+                    var i;
+                    var j;
+                    for(i in arr) {
+                        if(arr[i]['comment']['_id'] == val[1]) {
+                            for(j in arr[i]['replies']) {
+                                if(arr[i]['replies'][j]['comment']['_id'] == val[0]) {
+                                    uid = arr[i]['replies'][j]['comment']['user_id'];
+                                    break;
+                                }
+                            }
+                            break;
+                        }
+                    }
+                    if(uid != "-1") {
+                        Users.findOne({_id: uid}).exec(function (err, result1) {
+                            if (err)
+                                throw err;
+                            arr[i]['replies'][j]['user'].push(result1);
+                            callback1(null, true);
+                        });
+                    }
+                    else {
+                        callback1(null, true);
+                    }
+                }, function(err) {
+                    if(err)
+                        throw err;
+                    callback(null, true);
                 });
             }
         ], function(err) {
