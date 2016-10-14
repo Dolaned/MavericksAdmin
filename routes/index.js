@@ -159,7 +159,7 @@ router.post('/post', function (req, res, next) {
             throw err;
         return true;
     });
-
+    res.redirect('/post?id='+req.body.movieid);
 });
 
 module.exports = router;
