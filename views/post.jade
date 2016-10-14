@@ -101,8 +101,11 @@ block content
                                         b #{user.local.email}
                                 td
                                     form(method='POST', action='post')
-                                        input(type='hidden', name='movie_id', value=movie.imdbID)
-                                        input(type='hidden', name='user_id', value=user._id)
-                                        input(type='hidden', name='parent_id', value='-1')
+                                        input(type='hidden', name='movieid', value=movie.imdbID)
+                                        if user
+                                            input(type='hidden', name='userid', value=user._id)
+                                        else
+                                            input(type='hidden', name='userid', value='-1')
+                                        input(type='hidden', name='parentid', value='-1')
                                         textarea(name='body', placeholder='Enter comment here', class='form-control', style='min-height:100px;')
                                         input(type='submit', class='btn btn-danger pull-right', value='Add Comment')

@@ -148,10 +148,10 @@ router.post('/login', passport.authenticate('local-login', {
 
 router.post('/post', function (req, res, next) {
    var comment = new Comments();
-    comment.movie_id = req.query.movie-id;
-    comment.parent_id = req.query.parent-id;
-    comment.body = req.query.body;
-    comment.user_id = req.query.user-id;
+    comment.movie_id = req.body.movieid;
+    comment.parent_id = req.body.parentid;
+    comment.body = req.body.body;
+    comment.user_id = req.body.userid;
     comment.created_at = new Date();
 
     comment.save(function (err) {
