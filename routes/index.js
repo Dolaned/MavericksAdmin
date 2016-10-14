@@ -80,7 +80,8 @@ router.get('/post', function(req, res, next) {
     res.render('post', {
       title: title,
       movie: result,
-      login: checkLoggedIn(req)
+      login: checkLoggedIn(req),
+      user: req.user
     });
   });
 });

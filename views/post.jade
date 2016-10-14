@@ -89,3 +89,20 @@ block content
                                     p.info
                                         b Posted:
                                         |  5th July 2010
+                            tr
+                                td.text-center
+                                    if !login
+                                        img(src='https://avatars.io/gravatar/70', class='img-circle')
+                                        br
+                                        b Guest
+                                    else
+                                        img(src='https://avatars.io/gravatar/#{user.local.email}/70', class='img-circle')
+                                        br
+                                        b #{user.local.email}
+                                td
+                                    form(method='POST', action='post')
+                                        input(type='hidden', name='movie_id', value=movie.imdbID)
+                                        input(type='hidden', name='user_id', value=user._id)
+                                        input(type='hidden', name='parent_id', value='-1')
+                                        textarea(name='body', placeholder='Enter comment here', class='form-control', style='min-height:100px;')
+                                        input(type='submit', class='btn btn-danger pull-right', value='Add Comment')
