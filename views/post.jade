@@ -64,48 +64,86 @@ block content
                 hr
                 div.row
                     div.col-md-12
-                        h1(style='text-align:center') 2 Comments
+                        h1(style='text-align:center') Comments
                 div.row
                     div-col-md-12
-                        p.text-center There are no comments yet.
-                        table.table.table-hover.table-striped
-                            tr
-                                td.text-center
-                                    img(src='https://avatars.io/gravatar/zuc0001@gmail.com/70', class='img-circle')
-                                    br
-                                    b Username
-                                td
-                                    p This is a comment for this movie. This is hard-coded at the moment!
-                                    p.info
-                                        b Posted:
-                                        |  5th July 2010
-                            tr
-                                td.text-center
-                                    img(src='https://avatars.io/gravatar/zuc0001@gmail.com/70', class='img-circle')
-                                    br
-                                    b Username
-                                td
-                                    p This is a comment for this movie. This is hard-coded at the moment!
-                                    p.info
-                                        b Posted:
-                                        |  5th July 2010
-                            tr
-                                td.text-center
-                                    if !login
-                                        img(src='https://avatars.io/gravatar/70', class='img-circle')
-                                        br
-                                        b Guest
-                                    else
-                                        img(src='https://avatars.io/gravatar/#{user.local.email}/70', class='img-circle')
-                                        br
-                                        b #{user.local.email}
-                                td
-                                    form(method='POST', action='post')
-                                        input(type='hidden', name='movieid', value=movie.imdbID)
-                                        if user
-                                            input(type='hidden', name='userid', value=user._id)
+                        if comments.length < 1
+                            p.text-center There are no comments yet.
+                            table.table.table-hover.table-striped
+                                tr
+                                    td.text-center
+                                        if !login
+                                            img(src='https://avatars.io/gravatar/70', class='img-circle', style='width:50px;')
+                                            br
+                                            b Guest
                                         else
-                                            input(type='hidden', name='userid', value='-1')
-                                        input(type='hidden', name='parentid', value='-1')
-                                        textarea(name='body', placeholder='Enter comment here', class='form-control', style='min-height:100px;')
-                                        input(type='submit', class='btn btn-danger pull-right', value='Add Comment')
+                                            img(src='https://avatars.io/gravatar/#{user.local.email}/70', class='img-circle')
+                                            br
+                                            b #{user.local.email}
+                                    td
+                                        form(method='POST', action='post')
+                                            input(type='hidden', name='movieid', value=movie.imdbID)
+                                            if user
+                                                input(type='hidden', name='userid', value=user._id)
+                                            else
+                                                input(type='hidden', name='userid', value='-1')
+                                            input(type='hidden', name='parentid', value='-1')
+                                            textarea(name='body', minlength='5', placeholder='Enter comment here', class='form-control', style='min-height:100px;')
+                                            input(type='submit', class='btn btn-danger pull-right', value='Add Comment')
+                        else
+                            table.table.table-hover.table-striped
+                                each c, i in comments
+                                    tr
+                                        td.text-center
+                                            if c.user.length < 1
+                                                img(src='https://avatars.io/gravatar/70', class='img-circle', style='width:50px;')
+                                                br
+                                                b Guest
+                                            else
+                                                img(src='https://avatars.io/gravatar/#{c.user[0].local.email}/70', class='img-circle')
+                                                br
+                                                b #{c.user[0].local.email}
+                                        td
+                                            p #{c.comment.body}
+                                            p.info
+                                                b Posted:
+                                                |  #{c.comment.created_at}
+
+                                            table.table.table-hover.table-striped
+                                                if c.replies.length > 0
+                                                        each r, j in c.replies
+                                                            tr
+                                                                td.text-center
+                                                                    if r.user.length < 1
+                                                                        img(src='https://avatars.io/gravatar/70', class='img-circle', style='width:50px;')
+                                                                        br
+                                                                        b Guest
+                                                                    else
+                                                                        img(src='https://avatars.io/gravatar/#{r.user[0].local.email}/70', class='img-circle')
+                                                                        br
+                                                                        b #{r.user[0].local.email}
+                                                                td
+                                                                    p #{r.comment.body}
+                                                                    p.info
+                                                                        b Posted:
+                                                                        |  #{r.comment.created_at}
+                                tr
+                                    td.text-center
+                                        if !login
+                                            img(src='https://avatars.io/gravatar/70', class='img-circle', style='width:50px;')
+                                            br
+                                            b Guest
+                                        else
+                                            img(src='https://avatars.io/gravatar/#{user.local.email}/70', class='img-circle')
+                                            br
+                                            b #{user.local.email}
+                                    td
+                                        form(method='POST', action='post')
+                                            input(type='hidden', name='movieid', value=movie.imdbID)
+                                            if user
+                                                input(type='hidden', name='userid', value=user._id)
+                                            else
+                                                input(type='hidden', name='userid', value='-1')
+                                            input(type='hidden', name='parentid', value='-1')
+                                            textarea(name='body', minlength='5', placeholder='Enter comment here', class='form-control', style='min-height:100px;')
+                                            input(type='submit', class='btn btn-danger pull-right', value='Add Comment')

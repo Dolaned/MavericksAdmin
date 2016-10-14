@@ -80,73 +80,80 @@ router.get('/post', function(req, res, next) {
   var result = "";
   doCall(url, function(response){
     result = response;
+      var arr = [];
 
     var title = "Not Found - Mavericks Movie Blog";
     if(result.Response != "False") {
       title = result.Title + " - Mavericks Movie Blog";
       checkMovieExists(result.imdbID);
 
-        var found = false;
-        var arr = [];
-        var appender = [];
-        Comments.find({movie_id : result.imdbID}).exec(function(err, result){
-            if(err) {
-                throw err;
-            }
-            if(result.length < 1) {
-                found = false;
-            }
-            else {
-                found = true;
-            }
-            for(var temp in result){
-                if (result[temp][parent_id] == "-1"){
-                    var pusher = {};
-                    pusher['comment'] = result[temp];
-                    pusher['user'] = [];
-                    if(result[temp]['user_id'] != "-1") {
-                        // do a query to grab from users table result[temp]['user_id']
-                        Users.findOne({_id : result[temp]['user_id']}).exec(function(err,result1){
-                            pusher['user'].push(result1);
-                        });
+        async.series([
+            function(callback) {
+                Comments.find({movie_id : result.imdbID}).exec(function(err, res){
+                    if(err) {
+                        throw err;
                     }
-                    pusher['replies'] = [];
 
-                    for(var r in result) {
-                        if(result[r]['parent_id'] == result[temp]['_id']) {
-                            var pusher2 = {};
-                            pusher2['comment'] = result[r];
-                            pusher2['user'] = [];
-                            if(result[r]['user_id'] != "-1") {
-                                Users.findOne({_id : result[r]['user_id']}).exec(function(err,result2){
-                                    pusher2['user'].push(result2);
+                    for(var temp in res){
+                        if (res[temp]['parent_id'] == '-1'){
+                            var pusher = {};
+                            pusher['comment'] = res[temp];
+                            pusher['user'] = [];
+                            if(res[temp]['user_id'] != "-1") {
+                                Users.findOne({_id : res[temp]['user_id']}).exec(function(err,result1){
+                                    if(err)
+                                        throw err;
+                                    pusher['user'].push(result1);
                                 });
                             }
+                            pusher['replies'] = [];
 
-                            pusher['replies'].push(pusher2);
+                            for(var r in res) {
+                                if(res[r]['parent_id'] == res[temp]['_id']) {
+                                    var pusher2 = {};
+                                    pusher2['comment'] = res[r];
+                                    pusher2['user'] = [];
+                                    if(res[r]['user_id'] != "-1") {
+                                        Users.findOne({_id : res[r]['user_id']}).exec(function(err,result2){
+                                            if(err)
+                                                throw err;
+                                            pusher2['user'].push(result2);
+                                        });
+                                    }
+
+                                    pusher['replies'].push(pusher2);
+                                }
+                            }
+
+                            arr.push(pusher);
                         }
                     }
+                    callback(null, true);
 
-                    arr.push(pusher);
-                }
+                });
             }
-            for(var user in arr)
-            {
+        ], function(err) {
+            if(err)
+                throw err;
 
-                var message = result[user]['body'];
-            }
-
-
+            res.render('post', {
+                title: title,
+                movie: result,
+                login: checkLoggedIn(req),
+                user: req.user,
+                comments: arr
+            });
         });
-
     }
-    res.render('post', {
-      title: title,
-      movie: result,
-      login: checkLoggedIn(req),
-      user: req.user,
-      comments:arr
-    });
+    else {
+        res.render('post', {
+            title: title,
+            movie: result,
+            login: checkLoggedIn(req),
+            user: req.user,
+            comments: arr
+        });
+    }
   });
 });
 
