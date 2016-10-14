@@ -70,9 +70,13 @@ html, body {
   margin-left:10px;
 }
 
+p.info {
+  font-style:italic;
+}
 
-
-
+.table-hidden {
+  display:none;
+}
 
 
 

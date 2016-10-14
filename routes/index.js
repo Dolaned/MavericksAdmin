@@ -8,6 +8,8 @@ var async = require('async');
 
 var credentials = require('../config/credentials.js');
 var Movies = require('../models/Movie');
+var Comments = require('../models/Comment');
+var Users = require('../models/User');
 
 function doCall(urlToCall, callback) {
   urllib.request(urlToCall, { wd: 'nodejs' }, function (err, data, response) {
@@ -64,6 +66,13 @@ router.get('/', function(req, res, next) {
     });
 });
 
+/*Get Comments for specific movie*/
+
+
+
+
+
+
 /* Individual post*/
 router.get('/post', function(req, res, next) {
   var id = req.query.id;
@@ -71,17 +80,134 @@ router.get('/post', function(req, res, next) {
   var result = "";
   doCall(url, function(response){
     result = response;
+      var arr = [];
+      var queue = [];
+      var childQueue = [];
 
     var title = "Not Found - Mavericks Movie Blog";
     if(result.Response != "False") {
       title = result.Title + " - Mavericks Movie Blog";
       checkMovieExists(result.imdbID);
+
+        async.series([
+            function(callback) {
+                Comments.find({movie_id : result.imdbID}).exec(function(err, res){
+                    if(err) {
+                        throw err;
+                    }
+
+                    for(var temp in res){
+                        if (res[temp]['parent_id'] == '-1'){
+                            var pusher = {};
+                            pusher['comment'] = res[temp];
+                            pusher['user'] = [];
+                            if(res[temp]['user_id'] != "-1") {
+                                queue.push(res[temp]['_id']);
+                            }
+                            pusher['replies'] = [];
+
+                            for(var r in res) {
+                                if(res[r]['parent_id'] == res[temp]['_id']) {
+                                    var pusher2 = {};
+                                    pusher2['comment'] = res[r];
+                                    pusher2['user'] = [];
+                                    if(res[r]['user_id'] != "-1") {
+                                        childQueue.push([res[r]['_id'], res[temp]['_id']]);
+                                    }
+
+                                    pusher['replies'].push(pusher2);
+                                }
+                            }
+
+                            arr.push(pusher);
+                        }
+                    }
+                    callback(null, true);
+
+                });
+            },
+            function(callback) {
+                async.filter(queue, function(val, callback1) {
+                    var uid = "-1";
+                    var i;
+                    for(i in arr) {
+                        if(arr[i]['comment']['_id'] == val) {
+                            uid = arr[i]['comment']['user_id'];
+                            break;
+                        }
+                    }
+                    if(uid != "-1") {
+                        Users.findOne({_id: uid}).exec(function (err, result1) {
+                            if (err)
+                                throw err;
+                            arr[i]['user'].push(result1);
+                            callback1(null, true);
+                        });
+                    }
+                    else {
+                        callback1(null, true);
+                    }
+                }, function(err) {
+                    if(err)
+                        throw err;
+                    callback(null, true);
+                });
+            },
+            function(callback) {
+                async.filter(childQueue, function(val, callback1) {
+                    var uid = "-1";
+                    var i;
+                    var j;
+                    for(i in arr) {
+                        if(arr[i]['comment']['_id'] == val[1]) {
+                            for(j in arr[i]['replies']) {
+                                if(arr[i]['replies'][j]['comment']['_id'] == val[0]) {
+                                    uid = arr[i]['replies'][j]['comment']['user_id'];
+                                    break;
+                                }
+                            }
+                            break;
+                        }
+                    }
+                    if(uid != "-1") {
+                        Users.findOne({_id: uid}).exec(function (err, result1) {
+                            if (err)
+                                throw err;
+                            arr[i]['replies'][j]['user'].push(result1);
+                            callback1(null, true);
+                        });
+                    }
+                    else {
+                        callback1(null, true);
+                    }
+                }, function(err) {
+                    if(err)
+                        throw err;
+                    callback(null, true);
+                });
+            }
+        ], function(err) {
+            if(err)
+                throw err;
+
+            res.render('post', {
+                title: title,
+                movie: result,
+                login: checkLoggedIn(req),
+                user: req.user,
+                comments: arr
+            });
+        });
     }
-    res.render('post', {
-      title: title,
-      movie: result,
-      login: checkLoggedIn(req)
-    });
+    else {
+        res.render('post', {
+            title: title,
+            movie: result,
+            login: checkLoggedIn(req),
+            user: req.user,
+            comments: arr
+        });
+    }
   });
 });
 
@@ -144,6 +270,22 @@ router.post('/login', passport.authenticate('local-login', {
     failureFlash: true,
 }));
 
+router.post('/post', function (req, res, next) {
+   var comment = new Comments();
+    comment.movie_id = req.body.movieid;
+    comment.parent_id = req.body.parentid;
+    comment.body = req.body.body;
+    comment.user_id = req.body.userid;
+    comment.created_at = new Date();
+
+    comment.save(function (err) {
+        if (err)
+            throw err;
+        return true;
+    });
+    res.redirect('/post?id='+req.body.movieid);
+});
+
 module.exports = router;
 
 function isLoggedIn(req, res, next) {
@@ -187,3 +329,4 @@ function checkMovieExists(id) {
         }
     });
 }
+
